@@ -1,0 +1,153 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <ClCompile Include="main.cpp">
+      <Filter>Framework</Filter>
+    </ClCompile>
+    <ClCompile Include="SceneManager.cpp">
+      <Filter>Framework\Manager</Filter>
+    </ClCompile>
+    <ClCompile Include="TextureManager.cpp">
+      <Filter>Framework\Manager</Filter>
+    </ClCompile>
+    <ClCompile Include="Global.cpp">
+      <Filter>Framework\Global</Filter>
+    </ClCompile>
+    <ClCompile Include="Animation.cpp">
+      <Filter>Framework\Animation</Filter>
+    </ClCompile>
+    <ClCompile Include="IObject.cpp">
+      <Filter>Framework\IObject</Filter>
+    </ClCompile>
+    <ClCompile Include="initialize.cpp">
+      <Filter>Framework\initialize</Filter>
+    </ClCompile>
+    <ClCompile Include="Sprite.cpp">
+      <Filter>Framework\Sprite</Filter>
+    </ClCompile>
+    <ClCompile Include="GameScene.cpp">
+      <Filter>Game\GameScene</Filter>
+    </ClCompile>
+    <ClCompile Include="Player.cpp">
+      <Filter>Game\GameScene</Filter>
+    </ClCompile>
+    <ClCompile Include="Scene.cpp">
+      <Filter>Framework</Filter>
+    </ClCompile>
+    <ClCompile Include="Background.cpp">
+      <Filter>Game\GameScene</Filter>
+    </ClCompile>
+    <ClCompile Include="Drop.cpp">
+      <Filter>Game\GameScene</Filter>
+    </ClCompile>
+    <ClCompile Include="Map.cpp">
+      <Filter>Game\GameScene</Filter>
+    </ClCompile>
+    <ClCompile Include="MainScene.cpp">
+      <Filter>Game\MainScene</Filter>
+    </ClCompile>
+    <ClCompile Include="Building.cpp">
+      <Filter>Game\GameScene</Filter>
+    </ClCompile>
+    <ClCompile Include="Coin.cpp">
+      <Filter>Game\GameScene</Filter>
+    </ClCompile>
+    <ClCompile Include="Number.cpp">
+      <Filter>Game\GameScene</Filter>
+    </ClCompile>
+    <ClCompile Include="HowScene.cpp">
+      <Filter>Game\HowScene</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Framework">
+      <UniqueIdentifier>{299c77c0-2f8e-4e1f-8770-3746487aeaf5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Game">
+      <UniqueIdentifier>{86fefc1c-427a-47c8-95c4-c81489a9a4e7}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Framework\Manager">
+      <UniqueIdentifier>{24103f6e-ea9e-41cf-b6c0-44a818a22460}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Framework\Global">
+      <UniqueIdentifier>{33959682-b353-4854-8770-94dd81a02762}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Framework\Animation">
+      <UniqueIdentifier>{54db6d10-1473-44ae-9a35-930368c9ea8e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Framework\IObject">
+      <UniqueIdentifier>{87214667-0c4b-4e74-ade3-864113944b9c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Framework\initialize">
+      <UniqueIdentifier>{f36653cd-0672-4a57-9504-e5de566e0fa6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Framework\Sprite">
+      <UniqueIdentifier>{152a28ee-7612-4123-aa1b-8b0956dd51f2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Game\GameScene">
+      <UniqueIdentifier>{a770829d-0f52-46cd-8fd3-7835520a9da9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Game\MainScene">
+      <UniqueIdentifier>{d1a5e4f8-5c8e-4c42-850d-171f18db59f0}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Game\HowScene">
+      <UniqueIdentifier>{037752fa-4ca3-4586-9581-4b0e8619e167}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="SceneManager.h">
+      <Filter>Framework\Manager</Filter>
+    </ClInclude>
+    <ClInclude Include="TextureManager.h">
+      <Filter>Framework\Manager</Filter>
+    </ClInclude>
+    <ClInclude Include="Global.h">
+      <Filter>Framework\Global</Filter>
+    </ClInclude>
+    <ClInclude Include="Animation.h">
+      <Filter>Framework\Animation</Filter>
+    </ClInclude>
+    <ClInclude Include="IObject.h">
+      <Filter>Framework\IObject</Filter>
+    </ClInclude>
+    <ClInclude Include="initialize.h">
+      <Filter>Framework\initialize</Filter>
+    </ClInclude>
+    <ClInclude Include="Sprite.h">
+      <Filter>Framework\Sprite</Filter>
+    </ClInclude>
+    <ClInclude Include="GameScene.h">
+      <Filter>Game\GameScene</Filter>
+    </ClInclude>
+    <ClInclude Include="Player.h">
+      <Filter>Game\GameScene</Filter>
+    </ClInclude>
+    <ClInclude Include="Scene.h">
+      <Filter>Framework</Filter>
+    </ClInclude>
+    <ClInclude Include="Background.h">
+      <Filter>Game\GameScene</Filter>
+    </ClInclude>
+    <ClInclude Include="Drop.h">
+      <Filter>Game\GameScene</Filter>
+    </ClInclude>
+    <ClInclude Include="Map.h">
+      <Filter>Game\GameScene</Filter>
+    </ClInclude>
+    <ClInclude Include="MainScene.h">
+      <Filter>Game\MainScene</Filter>
+    </ClInclude>
+    <ClInclude Include="Building.h">
+      <Filter>Game\GameScene</Filter>
+    </ClInclude>
+    <ClInclude Include="Coin.h">
+      <Filter>Game\GameScene</Filter>
+    </ClInclude>
+    <ClInclude Include="Number.h">
+      <Filter>Game\GameScene</Filter>
+    </ClInclude>
+    <ClInclude Include="HowScene.h">
+      <Filter>Game\HowScene</Filter>
+    </ClInclude>
+  </ItemGroup>
+</Project>
