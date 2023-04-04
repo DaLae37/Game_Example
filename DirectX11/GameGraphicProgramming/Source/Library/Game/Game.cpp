@@ -1,8 +1,8 @@
-#include "Game/Game.h"
+#include "Game.h"
 
 HWND g_hWnd = nullptr;
 HINSTANCE g_hInstance = nullptr;
-LPCWSTR g_pszWindowName = L"2019102121 捞茄荐 LAB 01";
+LPCWSTR g_pszWindowName = L"Direct11";
 LPCWSTR g_pszWindowClassName = L"GGPWindowClass";
 
 D3D_DRIVER_TYPE g_driverType = D3D_DRIVER_TYPE_NULL;
@@ -14,6 +14,12 @@ ID3D11DeviceContext1* g_pImmediateContext1 = nullptr;
 IDXGISwapChain* g_pSwapChain = nullptr;
 IDXGISwapChain1* g_pSwapChain1 = nullptr;
 ID3D11RenderTargetView* g_pRenderTargetView = nullptr;
+
+ID3D11VertexShader* g_pVertexShader = nullptr;
+ID3D11PixelShader* g_pPixelShader = nullptr;
+ID3D11Buffer* g_pVertexBuffer = nullptr;
+ID3D11Buffer* g_pIndexBuffer = nullptr;
+ID3D11InputLayout* g_pVertexLayout = nullptr;
 
 LRESULT CALLBACK WindowProc(_In_ HWND hWnd, _In_ UINT uMsg, _In_ WPARAM wParam, _In_ LPARAM lParam) {
 	if (!hWnd)
@@ -232,6 +238,122 @@ HRESULT InitDevice()
 	vp.TopLeftX = 0;
 	vp.TopLeftY = 0;
 	g_pImmediateContext->RSSetViewports(1, &vp);
+
+
+	// 1. vertex shader 哪颇老
+
+	ID3DBlob* pVertexShaderBlob = nullptr;
+	hr = CompileShaderFromFile(L"../Library/Game/VS.hlsl", "main", "vs_5_0", &pVertexShaderBlob);
+	if (FAILED(hr))
+	{
+		pVertexShaderBlob->Release();
+		return hr;
+	}
+
+	// 2. vertex shader 积己
+
+	hr = g_pd3dDevice->CreateVertexShader(
+		pVertexShaderBlob->GetBufferPointer(),
+		pVertexShaderBlob->GetBufferSize(),
+		nullptr,
+		&g_pVertexShader
+	);
+
+	if (FAILED(hr))
+	{
+		pVertexShaderBlob->Release();
+		return hr;
+	}
+
+	// 3. input layout object 积己
+	D3D11_INPUT_ELEMENT_DESC layouts[] = {
+	   {
+		  "POSITION",
+		  0,
+		  DXGI_FORMAT_R32G32B32_FLOAT,
+		  0,
+		  0,
+		  D3D11_INPUT_PER_VERTEX_DATA, 0
+	   },
+	};
+	UINT uNumElements = ARRAYSIZE(layouts);
+
+	hr = g_pd3dDevice->CreateInputLayout(
+		layouts, uNumElements,
+		pVertexShaderBlob->GetBufferPointer(),
+		pVertexShaderBlob->GetBufferSize(),
+		&g_pVertexLayout);
+
+	pVertexShaderBlob->Release();
+
+	if (FAILED(hr))
+	{
+		assert(SUCCEEDED(hr));
+		return hr;
+	}
+
+	// 4. input layout binding
+	g_pImmediateContext->IASetInputLayout(g_pVertexLayout);
+
+	// 5. pixel shader 哪颇老
+
+	ID3DBlob* pPixelShaderBlob = nullptr;
+	hr = CompileShaderFromFile(L"../Library/Game/PS.hlsl", "main", "ps_5_0", &pPixelShaderBlob);
+	if (FAILED(hr))
+	{
+		pPixelShaderBlob->Release();
+		return hr;
+	}
+
+	// 6. pixel shader 积己
+
+	hr = g_pd3dDevice->CreatePixelShader(
+		pPixelShaderBlob->GetBufferPointer(),
+		pPixelShaderBlob->GetBufferSize(),
+		nullptr,
+		&g_pPixelShader
+	);
+
+	if (FAILED(hr))
+	{
+		pPixelShaderBlob->Release();
+		return hr;
+	}
+
+	// 7. vertex buffer 积己
+	// 8. vertex buffer binding
+
+	SimpleVertex sVertices[] =
+	{
+	   {XMFLOAT3(0.0f, 0.5f, 0.5f)},
+	   {XMFLOAT3(0.5f, -0.5f, 0.5f)},
+	   {XMFLOAT3(-0.5f, -0.5f, 0.5f)},
+	};
+
+	D3D11_BUFFER_DESC bd = {};
+	bd.Usage = D3D11_USAGE_DEFAULT;
+	bd.ByteWidth = sizeof(SimpleVertex) * 3;
+	bd.BindFlags = D3D11_BIND_VERTEX_BUFFER;
+	bd.CPUAccessFlags = 0;
+	bd.MiscFlags = 0;
+
+	D3D11_SUBRESOURCE_DATA initData = {};
+	initData.pSysMem = sVertices;
+
+	if (FAILED(hr = g_pd3dDevice->CreateBuffer(&bd, &initData, &g_pVertexBuffer)))
+	{
+		assert(SUCCEEDED(hr));
+		return hr;
+	}
+
+	UINT uStride = sizeof(SimpleVertex);
+	UINT uOffset = 0;
+
+	g_pImmediateContext->IASetVertexBuffers(0, 1, &g_pVertexBuffer, &uStride, &uOffset);
+
+	// 9. primitive type 汲沥
+	g_pImmediateContext->IASetPrimitiveTopology(D3D11_PRIMITIVE_TOPOLOGY_TRIANGLELIST);
+
 	return S_OK;
 }
 
@@ -245,10 +367,53 @@ void CleanupDevice()
 	if (g_pImmediateContext) g_pImmediateContext->Release();
 	if (g_pd3dDevice1) g_pd3dDevice1->Release();
 	if (g_pd3dDevice) g_pd3dDevice->Release();
+	if (g_pVertexBuffer) g_pVertexBuffer-> Release();
+	if (g_pVertexLayout) g_pVertexLayout-> Release();
+	if (g_pVertexShader) g_pVertexShader-> Release();
+	if (g_pPixelShader) g_pPixelShader-> Release();
 }
+
+HRESULT CompileShaderFromFile(_In_ PCWSTR pszFileName,_In_ PCSTR pszEntryPoint,	_In_ PCSTR pszShaderModel,_Outptr_ ID3DBlob** ppBlobOut) {
+	HRESULT hr = S_OK;
+	
+	DWORD dwShaderFlags = D3DCOMPILE_ENABLE_STRICTNESS;
+#if defined (DEBUG) || defined(_DEBUG)
+	dwShaderFlags |= D3DCOMPILE_DEBUG;
+#endif
+	ID3DBlob* pErrorBlob = nullptr;
+	hr = D3DCompileFromFile
+	(
+		pszFileName, // FileName
+		nullptr, // shader macros
+		nullptr, // include files`
+		pszEntryPoint, // Entry point
+		pszShaderModel, // shader target
+		dwShaderFlags, // flag1
+		0, // flag2
+		ppBlobOut, // ID3DBlob out 
+		&pErrorBlob // error blob out
+	);
+
+	if(FAILED(hr))
+	{
+		if(pErrorBlob) {
+			OutputDebugStringA(reinterpret_cast<PCSTR>(pErrorBlob-> GetBufferPointer()));
+			pErrorBlob-> Release();
+		}
+		return hr;
+	}
+	if(pErrorBlob)
+		pErrorBlob-> Release();
+	return S_OK;
+}
+
 
 void Render()
 {
 	g_pImmediateContext->ClearRenderTargetView(g_pRenderTargetView, Colors::MidnightBlue);
+	g_pImmediateContext->VSSetShader(g_pVertexShader, nullptr, 0);
+	g_pImmediateContext->PSSetShader(g_pPixelShader, nullptr, 0);
+	g_pImmediateContext->Draw(3, 0);
+	//g_pImmediateContext->DrawIndexed(3, 0, 0);
 	g_pSwapChain->Present(0, 0);
 }

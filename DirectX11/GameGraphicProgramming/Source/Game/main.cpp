@@ -6,7 +6,7 @@
   © 2022 Kyung Hee University
 ===================================================================+*/
 
-#include "Common.h"
+#include "Game/Common.h"
 
 #include "Game/Game.h"
 
@@ -51,8 +51,7 @@ INT WINAPI wWinMain
         (WM_QUIT != msg.message
             )
     {
-        if
-            (PeekMessage(&msg, nullptr, 0, 0, PM_REMOVE))
+        if(PeekMessage(&msg, nullptr, 0, 0, PM_REMOVE))
         {
             TranslateMessage(&msg);
             DispatchMessage(&msg);
