@@ -1,0 +1,1 @@
+Change Start Project Library to Game (ALT + Enter)
