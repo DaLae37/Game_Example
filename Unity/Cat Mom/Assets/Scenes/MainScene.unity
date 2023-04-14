@@ -268,6 +268,7 @@ MonoBehaviour:
   dog: {fileID: 173574251}
   cat: {fileID: 3421871101481984760, guid: eb38740518e8ef84bbbaa683551d1e04, type: 3}
   fatCat: {fileID: 2137508413711425029, guid: 26734042f201daa49b469b5490db0d66, type: 3}
+  pirateCat: {fileID: 3421871101481984760, guid: 35c706046ba595d41a45c644a9e61e7e, type: 3}
   reBUtton: {fileID: 323310578}
   text: {fileID: 2094045270}
   image: {fileID: 954288562}

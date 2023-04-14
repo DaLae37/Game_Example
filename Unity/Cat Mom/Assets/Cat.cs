@@ -29,7 +29,10 @@ public class Cat : MonoBehaviour
             {
                 transform.position += new Vector3(0.0f, -0.07f, 0.0f);
             }
-
+            else
+            {
+                transform.position += new Vector3(0.0f, -0.15f, 0.0f);
+            }
             if(transform.position.y < -16.0f)
             {
                 GameManager.i.GameOver();

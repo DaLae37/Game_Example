@@ -8,6 +8,7 @@ public class GameManager : MonoBehaviour
     public GameObject dog;
     public GameObject cat;
     public GameObject fatCat;
+    public GameObject pirateCat;
     public static GameManager i;
     public GameObject reBUtton;
     public Text text;
@@ -46,14 +47,29 @@ public class GameManager : MonoBehaviour
         }
         else if (level >= 2)
         {
-            float p = Random.Range(0, 10);
-            if (p < 2)
+            if(level <= 5)
             {
-                Instantiate(cat);
+                float p = Random.Range(0, 10);
+                if (p < 2)
+                {
+                    Instantiate(cat);
+                }
+                else
+                {
+                    Instantiate(fatCat);
+                }
             }
             else
             {
-                Instantiate(fatCat);
+                float p = Random.Range(0, 10);
+                if (p < 2)
+                {
+                    Instantiate(fatCat);
+                }
+                else
+                {
+                    Instantiate(pirateCat);
+                }
             }
         }
     }
