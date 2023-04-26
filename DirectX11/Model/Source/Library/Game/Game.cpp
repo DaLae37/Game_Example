@@ -301,10 +301,7 @@ LRESULT CALLBACK WindowProc(_In_ HWND hWnd, _In_ UINT uMsg, _In_ WPARAM wParam, 
 HRESULT InitDevice()
 {
 	Assimp::Importer importer;
-	const aiScene* pScene =
-		importer.ReadFile
-		("../../Data/Tetrahedron.obj",
-			aiProcess_Triangulate | aiProcess_ConvertToLeftHanded);
+	const aiScene* pScene = importer.ReadFile("../../Data/Tetrahedron.obj", aiProcess_Triangulate | aiProcess_ConvertToLeftHanded);
 	// For Debuging
 	static CHAR szDebugMessage[256];
 	sprintf_s(szDebugMessage, "Number of meshes found in file: % d\nNumber of verticies in first mesh : % d\n", pScene->mNumMeshes, pScene->mMeshes[0]->mNumVertices);
