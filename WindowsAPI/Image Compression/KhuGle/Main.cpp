@@ -235,8 +235,22 @@ void CImageProcessing::YCbCrtoRGB(double** Y, double** Cb, double** Cr, double**
 		for (int x = 0; x < m_pImageLayer->m_ImageOut.m_nW; ++x)
 		{
 			R[y][x] = Y[y][x] + Cr[y / 2][x / 2] * 1.40200;
+			if (R[y][x] > 255)
+				R[y][x] = 255;
+			else if (R[y][x] < 0)
+				R[y][x] = 0;
+
 			G[y][x] = Y[y][x] + Cb[y / 2][x / 2] * -0.34414 + Cr[y / 2][x / 2] * -0.71414;
+			if (G[y][x] > 255)
+				G[y][x] = 255;
+			else if (G[y][x] < 0)
+				G[y][x] = 0;
+
 			B[y][x] = Y[y][x] + Cb[y / 2][x / 2] * 1.77200;
+			if (B[y][x] > 255)
+				B[y][x] = 255;
+			else if (B[y][x] < 0)
+				B[y][x] = 0;
 		}
 	}
 	std::cout << "YCbCr to RGB 완료" << std::endl;
@@ -263,6 +277,29 @@ void CImageProcessing::IDCT(double** DCT_Y, double** DCT_Cb, double** DCT_Cr, do
 	IDCT2D(DCT_Y, Y, m_pImageLayer->m_Image.m_nW, m_pImageLayer->m_Image.m_nH, 8);
 	IDCT2D(DCT_Cb, Cb, m_pImageLayer->m_Image.m_nW / 2, m_pImageLayer->m_Image.m_nH / 2, 8);
 	IDCT2D(DCT_Cr, Cr, m_pImageLayer->m_Image.m_nW / 2, m_pImageLayer->m_Image.m_nH / 2, 8);
+
+	for (int y = 0; y < m_pImageLayer->m_ImageOut.m_nH; ++y) {
+		for (int x = 0; x < m_pImageLayer->m_ImageOut.m_nW; ++x)
+		{
+			if (Y[y][x] < 0)
+				Y[y][x] = 0;
+			else if (Y[y][x] > 255)
+				Y[y][x] = 255;
+
+			if (y % 2 == 0 && x % 2 == 0) {
+				if (Cb[y / 2][x / 2] < 0)
+					Cb[y / 2][x / 2] = 0;
+				else if (Cb[y / 2][x / 2] > 255)
+					Cb[y / 2][x / 2] = 255;
+
+				if (Cr[y /2][x / 2] < 0)
+					Cr[y /2][x / 2] = 0;
+				else if (Cr[y / 2][x / 2] > 255)
+					Cr[y / 2][x / 2] = 255;
+			}
+
+		}
+	}
 
 	std::cout << "IDCT 완료" << std::endl;
 }
@@ -310,12 +347,13 @@ void CImageProcessing::IQuantization(double** Q_Y, double** Q_Cb, double** Q_Cr,
 			}
 		}
 	}
+
 	std::cout << "Inverse Quantization 완료" << std::endl;
 }
 
 void CImageProcessing::PrintQuantization(double** Q_Y, double** Q_Cb, double** Q_Cr) {
 	double probability;
-	double entropy = 0;
+	double entropyY = 0, entropyCb = 0, entropyCr = 0;
 
 	int* numY = new int[Max_Y - Min_Y + 1];
 	int* numCb = new int[Max_Cb - Min_Cb + 1];
@@ -350,7 +388,7 @@ void CImageProcessing::PrintQuantization(double** Q_Y, double** Q_Cb, double** Q
 
 		if (numY[i] != 0) {
 			probability = numY[i] / double(m_pImageLayer->m_Image.m_nH * m_pImageLayer->m_ImageOut.m_nW);
-			entropy += (probability * log2(probability));
+			entropyY += (probability * log2(probability));
 		}
 	}
 	std::cout << std::endl;
@@ -365,7 +403,7 @@ void CImageProcessing::PrintQuantization(double** Q_Y, double** Q_Cb, double** Q
 		
 		if (numCb[i] != 0) {
 			probability = numCb[i] / double(m_pImageLayer->m_Image.m_nH / 2 * m_pImageLayer->m_ImageOut.m_nW / 2);
-			entropy += (probability * log2(probability));
+			entropyCb += (probability * log2(probability));
 		}
 	}
 	std::cout << std::endl;
@@ -380,12 +418,13 @@ void CImageProcessing::PrintQuantization(double** Q_Y, double** Q_Cb, double** Q
 
 		if (numCr[i] != 0) {
 			probability = numCr[i] / double(m_pImageLayer->m_Image.m_nH / 2 * m_pImageLayer->m_ImageOut.m_nW / 2);
-			entropy += (probability * log2(probability));
+			entropyCr += (probability * log2(probability));
 		}
 	}
 
 	std::cout << std::endl;
-	std::cout << "Entropy : " << entropy * -1 << std::endl;
+	std::cout << "Y의 Entropy : " << entropyY * -1 << " Cb의 Entropy : " << 
+		entropyCb * -1 << " Cr의 Entropy : " << entropyCr * -1<< std::endl;
 
 	delete[] numY;
 	delete[] numCb;
@@ -456,38 +495,12 @@ void CImageProcessing::Update()
 			YCbCrtoRGB(Y, Cb, Cr, R, G, B);
 
 			//결과 저장
-			double MaxR, MaxG, MaxB, MinR, MinG, MinB;
-
 			for (int y = 0; y < m_pImageLayer->m_ImageOut.m_nH; ++y)
 				for (int x = 0; x < m_pImageLayer->m_ImageOut.m_nW; ++x)
 				{
-					if (x == 0 && y == 0)
-					{
-						MaxR = MinR = R[y][x];
-						MaxG = MinG = G[y][x];
-						MaxB = MinB = B[y][x];
-					}
-					else
-					{
-						if (R[y][x] > MaxR) MaxR = R[y][x];
-						if (G[y][x] > MaxG) MaxG = G[y][x];
-						if (B[y][x] > MaxB) MaxB = B[y][x];
-
-						if (R[y][x] < MinR) MinR = R[y][x];
-						if (G[y][x] < MinG) MinG = G[y][x];
-						if (B[y][x] < MinB) MinB = B[y][x];
-					}
-				}
-
-			for (int y = 0; y < m_pImageLayer->m_ImageOut.m_nH; ++y)
-				for (int x = 0; x < m_pImageLayer->m_ImageOut.m_nW; ++x)
-				{
-					if (MaxR == MinR) m_pImageLayer->m_ImageOut.m_Red[y][x] = 0;
-					else m_pImageLayer->m_ImageOut.m_Red[y][x] = (int)((R[y][x] - MinR) * 255 / (MaxR - MinR));
-					if (MaxG == MinG) m_pImageLayer->m_ImageOut.m_Green[y][x] = 0;
-					else m_pImageLayer->m_ImageOut.m_Green[y][x] = (int)((G[y][x] - MinG) * 255 / (MaxG - MinG));
-					if (MaxB == MinB) m_pImageLayer->m_ImageOut.m_Blue[y][x] = 0;
-					else m_pImageLayer->m_ImageOut.m_Blue[y][x] = (int)((B[y][x] - MinB) * 255 / (MaxB - MinB));
+					m_pImageLayer->m_ImageOut.m_Red[y][x] = R[y][x];
+					m_pImageLayer->m_ImageOut.m_Green[y][x] = G[y][x];
+					m_pImageLayer->m_ImageOut.m_Blue[y][x] = B[y][x];
 				}
 
 			//평가
