@@ -1,4 +1,4 @@
-#define NUM_LIGHTS (1)
+#define NUM_LIGHTS (2)
 
 Texture2D txDiffuse : register(t0);
 SamplerState samLinear : register(s0);
