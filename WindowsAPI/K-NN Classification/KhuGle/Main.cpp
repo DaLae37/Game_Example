@@ -95,7 +95,7 @@ void CKhuGleRocLayer::MakeData()
 
 	std::vector<bool> Train(m_ReadData.size());
 	int nTrain = 0, nTest = 0;
-	for(int i=0; i<m_ReadData.size(); i++){
+	for (int i = 0; i < m_ReadData.size(); i++) {
 		if (rand() % 5 < 4) {
 			Train[i] = true;
 			nTrain++;
@@ -114,7 +114,7 @@ void CKhuGleRocLayer::MakeData()
 	int k = rand() % 7 * 2 + 3;
 	float thresh = k / (float)2;
 	std::cout << "Test : tau > k / 2 (k = " << k << ")" << std::endl;
-	double nTP = 0, nFP = 0, nTN = 0, positive = 0, negative = 0;
+	double nTP = 0, nFP = 0, nTN = 0, nFN = 0, positive = 0, negative = 0;
 	for (int i = 0; i < m_ReadData.size(); i++) {
 		if (Train[i]) {
 			continue;
@@ -130,7 +130,7 @@ void CKhuGleRocLayer::MakeData()
 				dist += (m_ReadData[i][k] - m_ReadData[j][k]) * (m_ReadData[i][k] - m_ReadData[j][k]);
 			}
 			dist = sqrt(dist);
-			NN.push_back({ dist, (int)m_ReadData[j][m_ReadData[j].size() - 1]});
+			NN.push_back({ dist, (int)m_ReadData[j][m_ReadData[j].size() - 1] });
 		}
 		std::sort(NN.begin(), NN.end(), DistanceSort);
 
@@ -149,25 +149,27 @@ void CKhuGleRocLayer::MakeData()
 		}
 
 		int real = (int)m_ReadData[i][m_ReadData[i].size() - 1];
-		if (decision == 1) {
-			if (real == 1) {
+		if (real == 1) {
+			if (decision == 1) {
 				nTP++;
 			}
 			else {
-				nFP++;
+				nFN++;
 			}
 			positive++;
 		}
 		else {
-			if (real == 0) {
+			if (decision == 1) {
+				nFP++;
+			}
+			else {
 				nTN++;
 			}
 			negative++;
 		}
 	}
-
 	std::cout << "True Positive Rate : " << nTP / positive * 100 << std::endl;
-	std::cout << "False Positive Rate : " << nFP / negative * 100<< std::endl;
+	std::cout << "False Positive Rate : " << nFP / negative * 100 << std::endl;
 	std::cout << "Accuracy : " << (nTP + nTN) / (positive + negative) * 100 << std::endl;
 }
 
